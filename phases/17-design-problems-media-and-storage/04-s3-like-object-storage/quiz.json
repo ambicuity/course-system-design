@@ -1,0 +1,67 @@
+[
+  {
+    "id": "s3-like-object-storage-pre-1",
+    "stage": "pre",
+    "question": "What distinguishes object storage from file and block storage?",
+    "options": [
+      "It supports in-place partial edits of stored data",
+      "It exposes a hierarchical directory tree like a filesystem",
+      "It stores immutable objects in a flat namespace of buckets, accessed via a RESTful API",
+      "It offers the lowest-level, highest-performance raw volume access"
+    ],
+    "correct": 2,
+    "explanation": "Object storage keeps immutable objects in buckets within a flat key namespace accessed over a REST API, trading in-place edits and low latency for massive scalability and durability."
+  },
+  {
+    "id": "s3-like-object-storage-pre-2",
+    "stage": "pre",
+    "question": "Why is the metadata path kept logically separate from the data path that stores object bytes?",
+    "options": [
+      "So metadata and data can scale and be optimized independently",
+      "So the API service can avoid using IAM for authorization",
+      "Because metadata must be stored on the same disks as the objects",
+      "To make every object mutable in place"
+    ],
+    "correct": 0,
+    "explanation": "Separating the metadata store from the data store lets each scale independently — metadata via sharding, data via adding data nodes."
+  },
+  {
+    "id": "s3-like-object-storage-post-1",
+    "stage": "post",
+    "question": "Compared to 3x replication, what is the main advantage of erasure coding such as an 8+4 Reed-Solomon scheme?",
+    "options": [
+      "It eliminates the need for checksums to detect corruption",
+      "It achieves comparable durability at far lower storage overhead (~1.5x vs 3x)",
+      "It makes reads and recovery faster and cheaper",
+      "It removes the need to spread chunks across failure domains"
+    ],
+    "correct": 1,
+    "explanation": "Erasure coding (e.g., 8 data + 4 parity, ~1.5x storage) reaches six-nines durability far more cheaply than 3x replication, at the cost of higher CPU and more expensive recovery."
+  },
+  {
+    "id": "s3-like-object-storage-post-2",
+    "stage": "post",
+    "question": "How does a data node efficiently persist many small objects without wasting space and inodes?",
+    "options": [
+      "It stores each small object as its own file on disk",
+      "It compresses all objects into a single zip archive per bucket",
+      "It appends many small objects into large append-only files and keeps an object_id to (file, offset, size) index",
+      "It writes small objects only to the metadata store"
+    ],
+    "correct": 2,
+    "explanation": "Small objects are packed into large append-only (WAL-style) files, with a per-node table mapping object_id to (file, offset, size) for fast seeks on read."
+  },
+  {
+    "id": "s3-like-object-storage-post-3",
+    "stage": "post",
+    "question": "How is an object deletion handled when versioning is enabled?",
+    "options": [
+      "The object bytes are physically removed immediately from all replicas",
+      "A delete marker (tombstone) is inserted as the latest version, retaining prior versions and allowing restore",
+      "The entire bucket is locked until garbage collection runs",
+      "The metadata row is updated but the object becomes mutable"
+    ],
+    "correct": 1,
+    "explanation": "With versioning, a delete inserts a tombstone delete marker as the newest version rather than erasing data; older versions remain addressable and the object can be restored. Garbage collection later reclaims unreferenced space."
+  }
+]

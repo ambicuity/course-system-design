@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-a-web-crawler-pre-1",
+    "stage": "pre",
+    "question": "Which traversal strategy is standard for web crawlers, and how is it implemented?",
+    "options": [
+      "Depth-first search using a stack",
+      "Breadth-first search using a FIFO queue (the URL frontier)",
+      "Random walk with no queue",
+      "Depth-first search using recursion only"
+    ],
+    "correct": 1,
+    "explanation": "BFS via a FIFO URL frontier is standard; DFS is avoided because it can dive into excessively deep paths."
+  },
+  {
+    "id": "design-a-web-crawler-pre-2",
+    "stage": "pre",
+    "question": "What does 'politeness' mean in the context of a web crawler?",
+    "options": [
+      "Always crawling the highest-PageRank pages first",
+      "Avoiding overwhelming any single server with too many requests too quickly",
+      "Storing pages in memory rather than on disk",
+      "Following only HTTPS links"
+    ],
+    "correct": 1,
+    "explanation": "A polite crawler spaces out its requests so it does not flood a host; a naive BFS would otherwise hammer the same site with thousands of requests per second."
+  },
+  {
+    "id": "design-a-web-crawler-post-1",
+    "stage": "post",
+    "question": "How does the URL Frontier enforce politeness toward individual hosts?",
+    "options": [
+      "By limiting the maximum URL length",
+      "By mapping each hostname to its own FIFO queue and having a worker download one page at a time with a delay",
+      "By caching robots.txt for every domain",
+      "By using a Bloom filter to skip seen URLs"
+    ],
+    "correct": 1,
+    "explanation": "A queue router maps each host to a dedicated queue, and a worker thread per queue downloads with a delay between requests, so no single host is overwhelmed."
+  },
+  {
+    "id": "design-a-web-crawler-post-2",
+    "stage": "post",
+    "question": "Which data structures are used by the 'URL Seen?' component to avoid reprocessing URLs, and why?",
+    "options": [
+      "Merkle trees, to compare divergent buckets",
+      "Vector clocks, to detect concurrent edits",
+      "Bloom filters or hash tables, for space-efficient or fast membership checks",
+      "Sorted sets, to keep URLs in priority order"
+    ],
+    "correct": 2,
+    "explanation": "Bloom filters give space-efficient probabilistic membership tests and hash tables give fast exact lookups, both used to detect already-processed URLs."
+  },
+  {
+    "id": "design-a-web-crawler-post-3",
+    "stage": "post",
+    "question": "What is a spider trap, and a common way to defend against it?",
+    "options": [
+      "A duplicate page detected by checksums; avoided by content hashing",
+      "An infinite URL loop like /foo/bar/foo/bar/...; mitigated by setting a maximum URL length",
+      "An unresponsive DNS server; mitigated by DNS caching",
+      "A blacklisted site; mitigated by the URL filter"
+    ],
+    "correct": 1,
+    "explanation": "Spider traps generate endlessly nested URLs that loop the crawler; capping the maximum URL length (plus custom filters for known traps) prevents getting stuck."
+  }
+]

@@ -1,0 +1,67 @@
+[
+  {
+    "id": "real-time-gaming-leaderboard-pre-1",
+    "stage": "pre",
+    "question": "Why does a relational table of (user_id, score) struggle to return a mid-leaderboard user's exact rank in real time?",
+    "options": [
+      "Relational databases cannot store integer scores",
+      "Computing an exact rank requires sorting millions of constantly-updated rows, which is too slow (10+ seconds) and hard to cache",
+      "SQL has no ORDER BY clause for descending scores",
+      "Primary keys forbid incrementing a score column"
+    ],
+    "correct": 1,
+    "explanation": "Exact rank needs a full ordered scan of millions of rows that change constantly, so it can't be cached and is far too slow for real time; a LIMIT 10 only helps the top."
+  },
+  {
+    "id": "real-time-gaming-leaderboard-pre-2",
+    "stage": "pre",
+    "question": "Which Redis data structure is the natural fit for a real-time leaderboard, and why?",
+    "options": [
+      "A plain list, because it preserves insertion order",
+      "A hash, because it maps user_id to score in O(1)",
+      "A sorted set, because members are unique, each carries a score, and entries stay auto-ordered with O(log n) updates and rank lookups",
+      "A bitmap, because scores are small integers"
+    ],
+    "correct": 2,
+    "explanation": "A Redis sorted set keeps unique members ranked by score using a hash table plus skip list, giving O(log n) inserts, increments, and rank queries ideal for leaderboards."
+  },
+  {
+    "id": "real-time-gaming-leaderboard-post-1",
+    "stage": "post",
+    "question": "Which sequence of Redis sorted-set commands correctly increments a user's score and then fetches the top 10 with scores?",
+    "options": [
+      "ZRANK then ZADD",
+      "ZINCRBY <key> 1 'mary1934' then ZREVRANGE <key> 0 9 WITHSCORES",
+      "ZADD <key> 'mary1934' then ZRANGE <key> 1 10",
+      "ZSCORE <key> 'mary1934' then ZRANGE <key> 0 10 DESC"
+    ],
+    "correct": 1,
+    "explanation": "ZINCRBY adds points (assuming 0 if new), and ZREVRANGE 0 9 WITHSCORES returns the highest-scoring 10 members in descending order with their scores."
+  },
+  {
+    "id": "real-time-gaming-leaderboard-post-2",
+    "stage": "post",
+    "question": "When scaling to ~500M DAU, why does the notes prefer fixed (score-range) partitioning over hash partitioning across a Redis Cluster?",
+    "options": [
+      "Hash partitioning cannot store sorted sets at all",
+      "Fixed partitioning eliminates the need for any MySQL backup",
+      "Hash partitioning scatters scores randomly, making a per-user global rank hard and requiring slow scatter-gather, whereas score-range shards let rank = local rank plus counts in higher shards",
+      "Fixed partitioning removes the 16,384 hash-slot limit"
+    ],
+    "correct": 2,
+    "explanation": "With score-range shards a global rank is local rank plus the user counts of all higher shards; hash partitioning randomizes placement so per-user rank is awkward and top-K needs scatter-gather."
+  },
+  {
+    "id": "real-time-gaming-leaderboard-post-3",
+    "stage": "post",
+    "question": "In the DynamoDB design, a GSI keyed by 'game_name#{year-month}' with sort key score creates a hot partition. What technique addresses it?",
+    "options": [
+      "Switching the sort key to user_id",
+      "Write sharding: append '#p{partition}' with partition = user_id % N to the partition key, spreading writes across N partitions and querying all on read",
+      "Removing the year-month from the key entirely",
+      "Storing every score in a single global secondary index row"
+    ],
+    "correct": 1,
+    "explanation": "Write sharding suffixes the partition key with user_id % N to distribute the current month's writes across partitions; reads then scatter-gather across the N partitions and merge."
+  }
+]

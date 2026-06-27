@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-a-url-shortener-pre-1",
+    "stage": "pre",
+    "question": "Given a 62-character alphabet (0-9, a-z, A-Z), what hash length is the smallest that supports 365 billion short URLs?",
+    "options": [
+      "5 characters",
+      "6 characters",
+      "7 characters",
+      "10 characters"
+    ],
+    "correct": 2,
+    "explanation": "62^6 is about 56.8 billion (too few) while 62^7 is about 3.5 trillion, so 7 characters is the smallest length that covers 365 billion URLs."
+  },
+  {
+    "id": "design-a-url-shortener-pre-2",
+    "stage": "pre",
+    "question": "Which redirect status lets the browser cache the mapping and bypass the shortener on later visits, reducing server load?",
+    "options": [
+      "301 (permanent)",
+      "302 (temporary)",
+      "307 (temporary)",
+      "404 (not found)"
+    ],
+    "correct": 0,
+    "explanation": "A 301 permanent redirect is cached by the browser so subsequent requests go straight to the long URL, reducing load; 302 keeps every request hitting the shortener (better for analytics)."
+  },
+  {
+    "id": "design-a-url-shortener-post-1",
+    "stage": "post",
+    "question": "What is the main disadvantage of the hash-plus-collision-resolution approach to generating short URLs?",
+    "options": [
+      "It produces variable-length URLs that grow with the ID",
+      "Collisions are possible and require extra database checks and resolution logic",
+      "It requires a distributed unique ID generator",
+      "The resulting URLs are easily predictable"
+    ],
+    "correct": 1,
+    "explanation": "Truncating a hash to 7 chars can collide, so you must check the database and re-hash on conflict; Bloom filters can reduce those lookups."
+  },
+  {
+    "id": "design-a-url-shortener-post-2",
+    "stage": "post",
+    "question": "What is a key drawback of the base-62 conversion approach compared to hashing?",
+    "options": [
+      "It frequently produces colliding short URLs",
+      "It cannot represent uppercase letters",
+      "Sequential IDs make the next short URL predictable, a security/enumeration risk",
+      "It requires storing a full timestamp per URL"
+    ],
+    "correct": 2,
+    "explanation": "Base-62 encodes a sequential unique ID, so URLs are collision-free but predictable, letting attackers enumerate them; it also depends on a unique ID generator and yields variable-length URLs."
+  },
+  {
+    "id": "design-a-url-shortener-post-3",
+    "stage": "post",
+    "question": "Given an estimated 10:1 read-to-write ratio for redirects, which design choice most improves redirect performance?",
+    "options": [
+      "Sharding the write path across more ID generators",
+      "Caching frequently accessed <shortURL, longURL> mappings",
+      "Switching all redirects from 301 to 302",
+      "Storing mappings only in an in-memory hash table with no database"
+    ],
+    "correct": 1,
+    "explanation": "Because redirects are read-heavy, a cache layer serving popular mappings dramatically reduces database load on the lookup path."
+  }
+]

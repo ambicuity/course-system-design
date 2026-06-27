@@ -1,0 +1,8 @@
+# Course: System Design — Python dependencies
+#
+# The course is primarily conceptual. The only runnable code lives in
+# Phase 20 (Object-Oriented & Applied Design) and uses the Python standard
+# library only — no third-party packages are required to run it.
+#
+# Jupyter is optional, for opening the .ipynb design katas interactively.
+jupyter>=1.0

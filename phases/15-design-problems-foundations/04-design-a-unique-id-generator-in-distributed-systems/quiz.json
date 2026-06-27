@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-a-unique-id-generator-in-distributed-systems-pre-1",
+    "stage": "pre",
+    "question": "Why is a single database auto-increment column a poor fit for generating IDs across hundreds of machines?",
+    "options": [
+      "It produces IDs that are too short to be unique",
+      "It is a single point of failure and a write bottleneck that does not scale horizontally",
+      "It generates random IDs that are not numeric",
+      "It requires 128 bits per ID"
+    ],
+    "correct": 1,
+    "explanation": "A central sequence serializes every insert, becomes a bottleneck and SPOF, and is painfully slow across regions, so distributed schemes are needed."
+  },
+  {
+    "id": "design-a-unique-id-generator-in-distributed-systems-pre-2",
+    "stage": "pre",
+    "question": "What is a key drawback of using UUIDv4 when a 64-bit, time-sortable numeric ID is required?",
+    "options": [
+      "UUIDs require a central coordinator on every request",
+      "UUIDs are 128 bits, non-numeric, and not time-sortable",
+      "UUIDs frequently collide under high load",
+      "UUIDs cannot be generated locally on a node"
+    ],
+    "correct": 1,
+    "explanation": "UUIDv4 is generated locally with no coordination, but it is 128 bits, hex/string rather than numeric, and random rather than time-ordered."
+  },
+  {
+    "id": "design-a-unique-id-generator-in-distributed-systems-post-1",
+    "stage": "post",
+    "question": "In Twitter Snowflake's 64-bit layout, why is the timestamp placed in the high-order bits?",
+    "options": [
+      "To make IDs sortable by time, since a numerically larger ID was generated later",
+      "To leave room for the sign bit at the end",
+      "To allow the sequence number to overflow safely",
+      "To hide the creation time from clients"
+    ],
+    "correct": 0,
+    "explanation": "Putting the millisecond timestamp in the most significant bits means larger IDs are newer, giving the roughly time-sortable property Snowflake promises."
+  },
+  {
+    "id": "design-a-unique-id-generator-in-distributed-systems-post-2",
+    "stage": "post",
+    "question": "What does the 12-bit sequence number in Snowflake do, and what is its per-machine limit per millisecond?",
+    "options": [
+      "Identifies the data center; up to 32 values",
+      "Counts milliseconds since the epoch; up to 4,096 values",
+      "Counts IDs within the same millisecond and resets each ms; up to 4,096 IDs",
+      "Stores the machine ID; up to 1,024 values"
+    ],
+    "correct": 2,
+    "explanation": "The sequence increments for each ID in the same millisecond and resets when the ms ticks over; 2^12 = 4,096 IDs per machine per millisecond (~4.09M/sec)."
+  },
+  {
+    "id": "design-a-unique-id-generator-in-distributed-systems-post-3",
+    "stage": "post",
+    "question": "What is the most important operational risk to Snowflake's correctness, and a standard mitigation?",
+    "options": [
+      "Index bloat; mitigated by switching to UUIDv4",
+      "Clocks moving backward (e.g., NTP corrections); mitigated by detecting regressions and waiting/refusing rather than emitting bad IDs",
+      "Sequence exhaustion; mitigated by adding more data center bits",
+      "Worker-ID collision on every request; mitigated by static config"
+    ],
+    "correct": 1,
+    "explanation": "Snowflake relies on a monotonic clock; if the timestamp moves backward it can duplicate or mis-order IDs, so nodes detect the regression and wait or fail loud, and prefer NTP slewing over step corrections."
+  }
+]

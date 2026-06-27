@@ -1,0 +1,67 @@
+[
+  {
+    "id": "hotel-reservation-system-pre-1",
+    "stage": "pre",
+    "question": "What do users actually reserve in the corrected data model?",
+    "options": [
+      "A specific room number assigned immediately",
+      "A room type (e.g., standard, king-size), with the specific room assigned at check-in",
+      "An entire floor of the hotel",
+      "A reservation has no relation to rooms at all"
+    ],
+    "correct": 1,
+    "explanation": "Users reserve room types, not specific rooms; the specific room number is assigned at check-in, which is why a room_type_inventory table replaces per-room booking."
+  },
+  {
+    "id": "hotel-reservation-system-pre-2",
+    "stage": "pre",
+    "question": "How does the reservationID act as an idempotency key?",
+    "options": [
+      "It encrypts the payment details",
+      "A unique constraint on reservationID makes a duplicate double-click insert fail, preventing double booking",
+      "It randomizes the assigned room each time",
+      "It is only used for analytics, not correctness"
+    ],
+    "correct": 1,
+    "explanation": "The reservationID is generated up front and shown on the confirmation page; the unique/primary-key constraint rejects a second insert with the same id, blocking double submissions."
+  },
+  {
+    "id": "hotel-reservation-system-post-1",
+    "stage": "post",
+    "question": "Why is optimistic locking recommended over pessimistic locking for this reservation system?",
+    "options": [
+      "Because the system has extremely high contention on every room",
+      "Because QPS is very low (~3 TPS), so occasional retries are acceptable and there is no deadlock risk or long-held locks",
+      "Because optimistic locking guarantees no transaction ever fails",
+      "Because pessimistic locking cannot prevent double booking"
+    ],
+    "correct": 1,
+    "explanation": "With ~3 TPS and little concurrent contention on the same room type, optimistic locking (version check) avoids deadlocks and long-held locks; its degradation under high concurrency doesn't bite here."
+  },
+  {
+    "id": "hotel-reservation-system-post-2",
+    "stage": "post",
+    "question": "How is the 10% overbooking feature expressed in the availability check?",
+    "options": [
+      "total_reserved + requested <= total_inventory",
+      "total_reserved + requested <= 110% * total_inventory",
+      "total_reserved <= 90% * total_inventory",
+      "requested <= total_inventory - 10"
+    ],
+    "correct": 1,
+    "explanation": "Overbooking allows reservations up to 110% of total inventory: availability holds when total_reserved + requested <= 1.1 * total_inventory."
+  },
+  {
+    "id": "hotel-reservation-system-post-3",
+    "stage": "post",
+    "question": "Why is cache-vs-database inconsistency acceptable for the inventory cache?",
+    "options": [
+      "Because the cache is the source of truth and the database is ignored",
+      "Because the database performs final validation regardless of cache state, so a stale cache only causes a retry or pessimistic UX, never a wrong booking",
+      "Because the cache is updated synchronously before every read",
+      "Because reservations never check inventory"
+    ],
+    "correct": 1,
+    "explanation": "The database is the source of truth and validates every booking, so a stale Redis cache at worst causes a failed booking the user retries or an overly pessimistic 'unavailable' view, not an incorrect outcome."
+  }
+]

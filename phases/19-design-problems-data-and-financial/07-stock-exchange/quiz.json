@@ -1,0 +1,67 @@
+[
+  {
+    "id": "stock-exchange-pre-1",
+    "stage": "pre",
+    "question": "What priority rule does the matching engine use to order resting orders in the book?",
+    "options": [
+      "Largest-order-first priority",
+      "Price-time priority (best price first, then FIFO by arrival time at each price level)",
+      "Random selection among eligible orders",
+      "Account-balance priority"
+    ],
+    "correct": 1,
+    "explanation": "Orders match by price-time priority: best price first, and within a price level orders are filled FIFO by arrival time."
+  },
+  {
+    "id": "stock-exchange-pre-2",
+    "stage": "pre",
+    "question": "What distinguishes a market order from a limit order?",
+    "options": [
+      "A market order rests in the book at a set price; a limit order executes immediately",
+      "A market order sweeps the book immediately at best available prices and never rests; a limit order rests at its price if unfilled",
+      "Both always rest in the book until canceled",
+      "A limit order ignores price and a market order specifies one"
+    ],
+    "correct": 1,
+    "explanation": "A market order matches immediately against best prices and never rests; a limit order matches at its price or better and any remainder rests in the book."
+  },
+  {
+    "id": "stock-exchange-post-1",
+    "stage": "post",
+    "question": "What is the role of the sequencer in the matching pipeline?",
+    "options": [
+      "It encrypts orders before matching",
+      "It assigns a single global, monotonically increasing sequence number to every event, imposing one canonical total order",
+      "It splits the order book across many threads per symbol",
+      "It batches orders into hourly auctions"
+    ],
+    "correct": 1,
+    "explanation": "The sequencer stamps every inbound event with a global monotonic sequence number, producing one total order that makes the engine a deterministic state machine enabling replay, replication, and audit."
+  },
+  {
+    "id": "stock-exchange-post-2",
+    "stage": "post",
+    "question": "Why is a single-threaded in-memory matching engine preferred per symbol?",
+    "options": [
+      "Because it is the only way to add more CPU cores per symbol",
+      "Because it avoids lock contention, cache-line bouncing, and nondeterministic interleavings while keeping the book cache-hot and deterministic",
+      "Because multithreading is impossible in modern hardware",
+      "Because it removes the need for any persistence"
+    ],
+    "correct": 1,
+    "explanation": "Single-threaded in-memory matching eliminates lock contention and nondeterministic interleavings, keeps the book in cache for nanosecond operations, and preserves determinism; parallelism comes from sharding across symbols."
+  },
+  {
+    "id": "stock-exchange-post-3",
+    "stage": "post",
+    "question": "How does the exchange persist state without blocking the microsecond matching path?",
+    "options": [
+      "It writes each order synchronously to disk before matching",
+      "The sequenced event stream is the source of truth, persisted via sequential append with batched commit and replication off the hot path, plus periodic snapshots for fast recovery",
+      "It never persists anything and rebuilds from client memory",
+      "It stores only the final end-of-day state"
+    ],
+    "correct": 1,
+    "explanation": "Event sourcing makes the sequenced log the source of truth; it is appended sequentially with batched/group commit and replication kept off or pipelined around the critical path, and snapshots bound recovery time."
+  }
+]

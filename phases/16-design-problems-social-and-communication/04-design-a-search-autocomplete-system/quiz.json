@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-a-search-autocomplete-system-pre-1",
+    "stage": "pre",
+    "question": "Which data structure is the core of the autocomplete design for retrieving suggestions by prefix?",
+    "options": [
+      "A hash table keyed by full query string",
+      "A trie (prefix tree) where paths from the root represent prefixes",
+      "A balanced binary search tree of all queries",
+      "A bloom filter of historical searches"
+    ],
+    "correct": 1,
+    "explanation": "A trie compactly stores strings and supports efficient prefix-based search; each node represents a prefix/word and branches toward completions."
+  },
+  {
+    "id": "design-a-search-autocomplete-system-pre-2",
+    "stage": "pre",
+    "question": "How are autocomplete suggestions ranked for a given prefix?",
+    "options": [
+      "Alphabetically",
+      "By historical query frequency (popularity)",
+      "By query length, shortest first",
+      "By how recently each query was first seen"
+    ],
+    "correct": 1,
+    "explanation": "Suggestions are ordered by popularity, i.e., the historical frequency of each query, returning the top-k (e.g., top 5) most-searched completions."
+  },
+  {
+    "id": "design-a-search-autocomplete-system-post-1",
+    "stage": "post",
+    "question": "Which optimizations reduce the naive top-k lookup from O(p) + O(c) + O(c log c) toward O(1)?",
+    "options": [
+      "Sharding the trie and adding a load balancer",
+      "Limiting prefix length and caching the top-k results at each trie node",
+      "Switching the trie from 26 children to binary nodes",
+      "Logging every keystroke instead of sampling"
+    ],
+    "correct": 1,
+    "explanation": "Capping prefix length makes finding the prefix node O(1), and caching top-k at each node removes the subtree traversal and sort, yielding effectively O(1) query time at the cost of extra memory."
+  },
+  {
+    "id": "design-a-search-autocomplete-system-post-2",
+    "stage": "post",
+    "question": "Why does the data gathering service rebuild the trie via batch aggregation (e.g., weekly) instead of updating it in real time on every query?",
+    "options": [
+      "Real-time updates would make suggestions less relevant",
+      "Billions of daily queries would bottleneck the query service, and top suggestions stay relatively stable",
+      "The trie cannot be modified once built",
+      "Batch rebuilds are required to support multiple languages"
+    ],
+    "correct": 1,
+    "explanation": "Updating the trie on every query would overwhelm the read-optimized query service; since popular suggestions change slowly, periodic batch aggregation keeps performance high while tolerating up to a few days of staleness."
+  },
+  {
+    "id": "design-a-search-autocomplete-system-post-3",
+    "stage": "post",
+    "question": "How does prefix-based sharding avoid hot-spot shards when scaling the trie across servers?",
+    "options": [
+      "It assigns exactly one letter to every shard regardless of traffic",
+      "It groups characters by query volume and adjusts shard ranges dynamically (e.g., 's' alone, rarer letters combined)",
+      "It hashes the full query so each shard gets equal random load",
+      "It replicates the entire trie to every shard"
+    ],
+    "correct": 1,
+    "explanation": "Because letter frequencies are uneven, a high-volume prefix like 's' may get its own shard while low-volume letters share one, and shard ranges are monitored and adjusted dynamically to prevent hot spots."
+  }
+]

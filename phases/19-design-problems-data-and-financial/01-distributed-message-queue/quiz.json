@@ -1,0 +1,67 @@
+[
+  {
+    "id": "distributed-message-queue-pre-1",
+    "stage": "pre",
+    "question": "In a Kafka-style partitioned log, what is message ordering guaranteed across?",
+    "options": [
+      "Globally across the entire topic",
+      "Only within a single partition",
+      "Across all partitions of a consumer group",
+      "Only for messages with the same timestamp"
+    ],
+    "correct": 1,
+    "explanation": "Order is guaranteed only within a partition; to keep an entity's events ordered you route them to the same partition via a partition key."
+  },
+  {
+    "id": "distributed-message-queue-pre-2",
+    "stage": "pre",
+    "question": "What primarily makes the append-only commit log on disk so fast for writes?",
+    "options": [
+      "It uses random-access writes spread across the disk",
+      "It compresses every message with a slow codec",
+      "It uses sequential disk I/O that is friendly to the page cache",
+      "It keeps all messages in RAM and never persists them"
+    ],
+    "correct": 2,
+    "explanation": "Appending is sequential disk I/O, far faster than random writes, and it works well with the OS page cache plus zero-copy (sendfile) reads."
+  },
+  {
+    "id": "distributed-message-queue-post-1",
+    "stage": "post",
+    "question": "With producer setting acks=all and min.insync.replicas configured, when is a message considered committed?",
+    "options": [
+      "As soon as the leader writes it to its local log",
+      "Once it is written to all replicas in the in-sync replica (ISR) set",
+      "Once any single follower acknowledges it",
+      "As soon as the producer sends it, without waiting"
+    ],
+    "correct": 1,
+    "explanation": "With acks=all a message is committed only after all ISR members have written it; consumers only ever see committed messages up to the high-watermark."
+  },
+  {
+    "id": "distributed-message-queue-post-2",
+    "stage": "post",
+    "question": "Why does Kafka use pull (with long-polling) rather than pushing messages to consumers?",
+    "options": [
+      "Push offers lower latency in every scenario so pull is purely a fallback",
+      "Pull lets consumers control rate and batching, gives natural backpressure, and makes replay trivial",
+      "Pull guarantees exactly-once delivery automatically",
+      "Push is impossible over TCP connections"
+    ],
+    "correct": 1,
+    "explanation": "Pull gives consumers control over fetch rate and batching, provides natural backpressure, and makes replaying old offsets trivial; long-poll removes busy-waiting when idle."
+  },
+  {
+    "id": "distributed-message-queue-post-3",
+    "stage": "post",
+    "question": "What is the pragmatic recommended way to achieve exactly-once effect for most consumers?",
+    "options": [
+      "Switch to at-most-once delivery and accept occasional loss",
+      "At-least-once delivery plus idempotent consumers that dedupe on a message id",
+      "Disable replication so messages can never be redelivered",
+      "Use acks=0 so producers never retry"
+    ],
+    "correct": 1,
+    "explanation": "Default to at-least-once delivery and make processing idempotent (dedupe on message id / use upserts); reach for transactional exactly-once only when duplicates are truly unacceptable."
+  }
+]

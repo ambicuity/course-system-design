@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-a-key-value-store-pre-1",
+    "stage": "pre",
+    "question": "According to the CAP theorem, which combination is impossible to fully guarantee in a real distributed system?",
+    "options": [
+      "Consistency and Partition tolerance together",
+      "Availability and Partition tolerance together",
+      "Consistency and Availability with no possibility of network partitions (CA)",
+      "Any single one of the three properties alone"
+    ],
+    "correct": 2,
+    "explanation": "Because network partitions are inevitable, a pure CA system is impossible in distributed environments; designers must trade off between consistency (CP) and availability (AP)."
+  },
+  {
+    "id": "design-a-key-value-store-pre-2",
+    "stage": "pre",
+    "question": "How does a distributed key-value store typically partition data across many servers with minimal movement when nodes change?",
+    "options": [
+      "Consistent hashing on a ring",
+      "Round-robin assignment by insertion order",
+      "Storing all keys on a single primary server",
+      "Random placement recomputed on every read"
+    ],
+    "correct": 0,
+    "explanation": "Consistent hashing distributes keys around a ring so adding or removing nodes only redistributes a small fraction of keys."
+  },
+  {
+    "id": "design-a-key-value-store-post-1",
+    "stage": "post",
+    "question": "With quorum consensus (N replicas, W write quorum, R read quorum), what guarantees strong consistency?",
+    "options": [
+      "W = 1 and R = 1",
+      "W + R > N",
+      "W + R <= N",
+      "W = N and R = N always"
+    ],
+    "correct": 1,
+    "explanation": "When W + R > N, the read and write quorums overlap on at least one node that holds the latest data, guaranteeing strong consistency (e.g., N=3, W=R=2)."
+  },
+  {
+    "id": "design-a-key-value-store-post-2",
+    "stage": "post",
+    "question": "What are vector clocks used for in a key-value store?",
+    "options": [
+      "Synchronizing the wall-clock time of all servers",
+      "Detecting conflicting (sibling) versions from concurrent writes so they can be reconciled",
+      "Assigning unique worker IDs to each node",
+      "Compressing values smaller than 10 KB"
+    ],
+    "correct": 1,
+    "explanation": "A vector clock D([Si, vi], ...) tracks per-server version counters so the system can tell whether one version is an ancestor of another or a conflicting sibling needing resolution."
+  },
+  {
+    "id": "design-a-key-value-store-post-3",
+    "stage": "post",
+    "question": "Which mechanism efficiently detects which replicas are out of sync during permanent-failure anti-entropy repair?",
+    "options": [
+      "All-to-all heartbeat multicasting",
+      "Sloppy quorum with hinted handoff",
+      "Merkle trees comparing bucket hashes top-down",
+      "Bloom filters on the write-ahead log"
+    ],
+    "correct": 2,
+    "explanation": "Merkle trees let replicas compare root hashes and recurse only into divergent buckets, so sync cost scales with the differences rather than total data volume."
+  }
+]

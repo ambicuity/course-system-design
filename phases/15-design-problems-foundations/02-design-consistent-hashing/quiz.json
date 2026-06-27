@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-consistent-hashing-pre-1",
+    "stage": "pre",
+    "question": "With traditional hash(key) % N load balancing, what happens when one of the N servers is removed?",
+    "options": [
+      "Only the keys on the removed server need to move",
+      "Most keys remap to different servers, causing a storm of cache misses",
+      "Nothing changes because the hash values stay the same",
+      "Keys are automatically duplicated onto every remaining server"
+    ],
+    "correct": 1,
+    "explanation": "Changing N changes the modulo result for nearly every key, so most keys remap and clients hit the wrong servers, producing widespread cache misses."
+  },
+  {
+    "id": "design-consistent-hashing-pre-2",
+    "stage": "pre",
+    "question": "On a consistent hashing ring, how is the server responsible for a given key determined?",
+    "options": [
+      "By taking hash(key) modulo the number of servers",
+      "By moving clockwise from the key's position to the first server encountered",
+      "By selecting the server with the numerically smallest hash",
+      "By picking a random server each lookup for load balancing"
+    ],
+    "correct": 1,
+    "explanation": "Both keys and servers are placed on the ring; a key belongs to the first server found by traversing clockwise from the key's position."
+  },
+  {
+    "id": "design-consistent-hashing-post-1",
+    "stage": "post",
+    "question": "On average, how many keys must be remapped when a server is added or removed with consistent hashing (k keys, n slots)?",
+    "options": [
+      "k keys (all of them)",
+      "k/2 keys",
+      "k/n keys",
+      "n keys"
+    ],
+    "correct": 2,
+    "explanation": "Consistent hashing only needs to remap about k/n keys on average, versus nearly all keys with modulo hashing."
+  },
+  {
+    "id": "design-consistent-hashing-post-2",
+    "stage": "post",
+    "question": "Why are virtual nodes (replicas) introduced in consistent hashing?",
+    "options": [
+      "To balance partition sizes and key distribution, reducing hotspots",
+      "To eliminate the need for a hash function entirely",
+      "To guarantee strict time-ordering of keys",
+      "To remove the clockwise traversal step during lookups"
+    ],
+    "correct": 0,
+    "explanation": "Placing each server at multiple ring positions evens out partition sizes and key distribution; more virtual nodes lower the standard deviation from the mean."
+  },
+  {
+    "id": "design-consistent-hashing-post-3",
+    "stage": "post",
+    "question": "What is the trade-off of increasing the number of virtual nodes per server?",
+    "options": [
+      "Keys become less evenly distributed across servers",
+      "More balanced distribution but higher memory overhead for node metadata",
+      "Lookups stop working when servers are removed",
+      "It forces the use of modulo hashing again"
+    ],
+    "correct": 1,
+    "explanation": "More virtual nodes give a smaller standard deviation (more balanced load) but require storing more virtual-node metadata, so the count is tuned to the system."
+  }
+]

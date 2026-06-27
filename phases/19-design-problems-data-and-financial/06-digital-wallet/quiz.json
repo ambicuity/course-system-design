@@ -1,0 +1,67 @@
+[
+  {
+    "id": "digital-wallet-pre-1",
+    "stage": "pre",
+    "question": "What is the core engineering problem of a digital wallet?",
+    "options": [
+      "Rendering the balance UI quickly",
+      "An atomic balance transfer between two wallets that never creates or loses money",
+      "Storing user profile photos",
+      "Compressing transaction history for storage"
+    ],
+    "correct": 1,
+    "explanation": "The crux is atomically debiting the sender and crediting the receiver as one logical unit, correctly and durably, with a full audit trail."
+  },
+  {
+    "id": "digital-wallet-pre-2",
+    "stage": "pre",
+    "question": "Why is a single-node ACID transaction insufficient at the 1M TPS target?",
+    "options": [
+      "ACID transactions cannot prevent overdraft",
+      "A single relational node does only a few thousand write TPS and breaks once wallets are sharded across nodes",
+      "ACID transactions are not durable",
+      "It double-counts every transfer"
+    ],
+    "correct": 1,
+    "explanation": "A single DB ACID transaction is correct but caps at a few thousand TPS and only works when both wallets live in one database; cross-shard transfers need distributed approaches."
+  },
+  {
+    "id": "digital-wallet-post-1",
+    "stage": "post",
+    "question": "Which distributed transaction approach blocks participants holding locks if the coordinator crashes after prepare?",
+    "options": [
+      "Saga",
+      "TCC (Try-Confirm/Cancel)",
+      "2PC (Two-Phase Commit)",
+      "Event sourcing"
+    ],
+    "correct": 2,
+    "explanation": "2PC is synchronous and blocking: if the coordinator crashes after the prepare phase, participants are stuck holding locks, giving poor availability and throughput."
+  },
+  {
+    "id": "digital-wallet-post-2",
+    "stage": "post",
+    "question": "In the event-sourced design, what is the source of truth and how is current balance obtained?",
+    "options": [
+      "The wallet row is the source of truth; events are a backup",
+      "The immutable, ordered append-only event log is the source of truth; balance is a deterministic replay (fold) of events",
+      "Redis is the source of truth; the log is a cache",
+      "The current balance is stored and mutated directly with no log"
+    ],
+    "correct": 1,
+    "explanation": "Event sourcing makes the append-only ordered event log the source of truth; current balances are derived by deterministically folding events, giving free reproducibility and audit."
+  },
+  {
+    "id": "digital-wallet-post-3",
+    "stage": "post",
+    "question": "Why is Redis unsafe as the system of record for wallet balances?",
+    "options": [
+      "It is too slow for in-memory operations",
+      "Its default persistence (RDB/AOF) can lose recent writes on crash and it lacks rich cross-cluster multi-key ACID, risking lost money",
+      "It cannot store integer balances",
+      "It cannot be replicated across nodes"
+    ],
+    "correct": 1,
+    "explanation": "Redis is primarily in-memory; default persistence can lose recent writes on crash and it lacks multi-key ACID across a cluster, so it should serve derived read projections only, never the authoritative balance."
+  }
+]

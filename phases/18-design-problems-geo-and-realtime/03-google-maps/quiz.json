@@ -1,0 +1,67 @@
+[
+  {
+    "id": "google-maps-pre-1",
+    "stage": "pre",
+    "question": "In the Web Mercator tiling scheme, a tile is addressed by (z, x, y). What happens to the tile grid when you zoom in by one level?",
+    "options": [
+      "The number of tiles doubles and resolution stays the same",
+      "The grid becomes a 2^z x 2^z layout, so each zoom level quadruples the tile count and doubles linear resolution",
+      "The tile count halves as detail is merged",
+      "Tiles are re-projected to a hexagonal grid at each level"
+    ],
+    "correct": 1,
+    "explanation": "At zoom z the world is a 2^z x 2^z grid of 256x256 tiles; one level deeper quadruples tile count and doubles resolution, and each (z,x,y) maps to an immutable cacheable URL."
+  },
+  {
+    "id": "google-maps-pre-2",
+    "stage": "pre",
+    "question": "Why is a CDN considered non-negotiable for serving map tiles at planet scale?",
+    "options": [
+      "CDNs are required to run the geocoding inverted index",
+      "Tiles are static and shared by all users, so edge caching yields very high hit rates and offloads almost all traffic from origin, the single biggest cost lever",
+      "CDNs compute shortest paths closer to the user",
+      "Tiles must be personalized per user, which only a CDN can do"
+    ],
+    "correct": 1,
+    "explanation": "Tiles are immutable and universally shared, so popular areas cache at the edge with near-100% hit rates, serving in <100ms and sparing origin the bulk of bandwidth cost."
+  },
+  {
+    "id": "google-maps-post-1",
+    "stage": "post",
+    "question": "Why is plain Dijkstra per request inadequate for continent-scale routing, and what class of technique fixes it?",
+    "options": [
+      "Dijkstra cannot handle one-way edges; switching to A* alone solves it fully",
+      "A graph of hundreds of millions of nodes is too slow per query, so preprocessing methods like Contraction Hierarchies, CRP, or overlay graphs precompute shortcuts for millisecond queries",
+      "Dijkstra requires the whole graph in a single Redis key, which exceeds memory limits",
+      "Routing must be done client-side, so server algorithms are irrelevant"
+    ],
+    "correct": 1,
+    "explanation": "Plain Dijkstra over a planetary graph is too slow interactively; production relies on preprocessing-based speedups (CH, CRP, partitioned overlay graphs) to answer in milliseconds."
+  },
+  {
+    "id": "google-maps-post-2",
+    "stage": "post",
+    "question": "For a long route, what speed value should an ETA computation use for a highway segment 40 minutes ahead?",
+    "options": [
+      "The segment's current live speed at request time",
+      "The posted speed limit, ignoring traffic",
+      "The predicted speed for when the driver will actually reach that segment, from historical patterns plus current trend",
+      "The average speed across the entire route so far"
+    ],
+    "correct": 2,
+    "explanation": "ETA is time-dependent: a far segment's current congestion is irrelevant; the model predicts the speed at the future arrival time and continuously recomputes as the trip progresses."
+  },
+  {
+    "id": "google-maps-post-3",
+    "stage": "post",
+    "question": "Why are GPS pings published to a durable stream like Kafka rather than written straight into the routing service?",
+    "options": [
+      "Kafka renders map tiles faster than object storage",
+      "It decouples the millions-of-pings/sec, high-fan-in producers from slower windowed aggregation consumers and absorbs bursts, while keeping the user's UI path separate and synchronous",
+      "Kafka guarantees exact shortest-path results",
+      "Routing requires every raw ping to be stored forever for replay"
+    ],
+    "correct": 1,
+    "explanation": "The stream buffers bursty high-volume ingest and decouples producers from the slower map-match-and-aggregate stage; the latency-sensitive UI path is handled separately."
+  }
+]

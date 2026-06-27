@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400" role="img" aria-label="Course: System Design — a self-paced curriculum by Ritesh Rana">
+  <defs>
+    <radialGradient id="sunny" cx="0.85" cy="0.15" r="0.55">
+      <stop offset="0" stop-color="#F5C45E" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#F5C45E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sage-blob" cx="0.08" cy="0.92" r="0.45">
+      <stop offset="0" stop-color="#6FAF9E" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#6FAF9E" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .display { font-family: 'Fraunces', 'Source Serif 4', Georgia, serif; font-weight: 600; font-style: italic; }
+      .body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 400; }
+      .mono { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; font-weight: 500; letter-spacing: 0.18em; }
+    </style>
+  </defs>
+
+  <!-- background -->
+  <rect width="1200" height="400" fill="#FFF7EC"/>
+  <rect width="1200" height="400" fill="url(#sunny)"/>
+  <rect width="1200" height="400" fill="url(#sage-blob)"/>
+
+  <!-- decorative sage squiggle, top-left -->
+  <path d="M 70 70 q 18 -18 36 0 t 36 0 t 36 0 t 36 0"
+        fill="none" stroke="#6FAF9E" stroke-width="3" stroke-linecap="round" stroke-opacity="0.75"/>
+
+  <!-- decorative berry squiggle, bottom-left -->
+  <path d="M 70 348 q 20 -16 40 0 t 40 0 t 40 0 t 40 0 t 40 0"
+        fill="none" stroke="#E2557A" stroke-width="3" stroke-linecap="round" stroke-opacity="0.7"/>
+
+  <!-- scattered sparkles -->
+  <g fill="#E2557A">
+    <path d="M 1020 120 l 6 -22 l 6 22 l 22 6 l -22 6 l -6 22 l -6 -22 l -22 -6 z"/>
+  </g>
+  <g fill="#F5C45E">
+    <path d="M 1110 260 l 4 -14 l 4 14 l 14 4 l -14 4 l -4 14 l -4 -14 l -14 -4 z"/>
+  </g>
+  <g fill="#6FAF9E">
+    <path d="M 990 320 l 3 -10 l 3 10 l 10 3 l -10 3 l -3 10 l -3 -10 l -10 -3 z"/>
+  </g>
+
+  <!-- eyebrow: small tag -->
+  <g class="mono" font-size="13" fill="#5A4458">
+    <text x="80" y="100">A SELF-PACED CURRICULUM</text>
+  </g>
+
+  <!-- "Course:" line -->
+  <g class="display" fill="#6FAF9E">
+    <text x="80" y="170" font-size="56">Course:</text>
+  </g>
+
+  <!-- main wordmark line 1 -->
+  <g class="display" fill="#2A1A2E">
+    <text x="80" y="258" font-size="92" letter-spacing="1">System Design</text>
+  </g>
+
+  <!-- inline sparkle after wordmark -->
+  <g fill="#E2557A">
+    <path d="M 870 232 l 8 -28 l 8 28 l 28 8 l -28 8 l -8 28 l -8 -28 l -28 -8 z"/>
+  </g>
+
+  <!-- subline -->
+  <g class="body" fill="#5A4458">
+    <text x="80" y="306" font-size="20">Networking, databases, caching, queues, and the classic design problems — grounded.</text>
+  </g>
+
+  <!-- byline -->
+  <g class="body" fill="#2A1A2E" font-weight="500">
+    <text x="80" y="340" font-size="16">by Ritesh Rana</text>
+  </g>
+
+  <!-- footer rule -->
+  <line x1="80" y1="362" x2="1120" y2="362" stroke="#E8D9C2" stroke-width="1"/>
+
+  <!-- footer meta -->
+  <g class="mono" font-size="11" fill="#5A4458">
+    <text x="80" y="384">OPEN SOURCE · MIT LICENSE</text>
+  </g>
+  <g class="mono" font-size="11" fill="#5A4458" text-anchor="end">
+    <text x="1120" y="384">21 PHASES · 249 LESSONS · CONCEPTS PLUS 29 DESIGN PROBLEMS</text>
+  </g>
+</svg>

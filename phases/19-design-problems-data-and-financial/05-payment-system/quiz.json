@@ -1,0 +1,67 @@
+[
+  {
+    "id": "payment-system-pre-1",
+    "stage": "pre",
+    "question": "What is the dominant design concern for a payment system?",
+    "options": [
+      "Raw throughput, since it must handle millions of TPS",
+      "Correctness under failure (exactly-once, no double-charge), since throughput is low",
+      "Minimizing the number of database tables",
+      "Storing raw card numbers efficiently"
+    ],
+    "correct": 1,
+    "explanation": "At ~120 peak TPS a payment system is not throughput-bound; it is correctness-bound, dominated by never losing or duplicating a money movement."
+  },
+  {
+    "id": "payment-system-pre-2",
+    "stage": "pre",
+    "question": "Why integrate a hosted PSP (Stripe/Adyen) with client-side tokenization?",
+    "options": [
+      "To increase transaction throughput",
+      "To keep raw card data off our servers and out of heavy PCI DSS scope",
+      "To avoid needing an internal ledger",
+      "To eliminate the need for idempotency"
+    ],
+    "correct": 1,
+    "explanation": "Tokenization / hosted fields keep PAN/CVV off our servers entirely, avoiding full PCI DSS Level 1 scope; we only ever store PSP tokens."
+  },
+  {
+    "id": "payment-system-post-1",
+    "stage": "post",
+    "question": "In double-entry bookkeeping, what self-checking invariant makes ledger corruption detectable?",
+    "options": [
+      "Every account always has a positive balance",
+      "The sum of debits equals the sum of credits for every transaction",
+      "Each ledger row is updated in place after each transaction",
+      "Balances are stored as floating-point numbers for precision"
+    ],
+    "correct": 1,
+    "explanation": "Every transaction touches at least two accounts with equal debits and credits; if debits do not equal credits, something is wrong, and the append-only journal gives a full audit trail."
+  },
+  {
+    "id": "payment-system-post-2",
+    "stage": "post",
+    "question": "How is exactly-once effect achieved given unreliable networks and at-least-once webhooks?",
+    "options": [
+      "A magic exactly-once network protocol",
+      "At-least-once delivery (retry until acked) combined with idempotent receivers that dedupe on the idempotency key",
+      "Disabling all retries so nothing is ever duplicated",
+      "Storing card data locally to verify each charge"
+    ],
+    "correct": 1,
+    "explanation": "There is no true exactly-once over an unreliable network; you combine at-least-once delivery with idempotent processing (unique-constraint-enforced idempotency key) to get exactly-once effect."
+  },
+  {
+    "id": "payment-system-post-3",
+    "stage": "post",
+    "question": "What is the role of the daily reconciliation job?",
+    "options": [
+      "It replaces the need for idempotency keys",
+      "It compares the PSP settlement file against the internal ledger to catch missed webhooks, fees, and FX rounding that idempotency and retries missed",
+      "It deletes old ledger rows to save space",
+      "It authorizes new charges with the PSP"
+    ],
+    "correct": 1,
+    "explanation": "Reconciliation is the safety net: a scheduled batch job diffs the PSP's report against the ledger, auto-adjusting known fees and flagging unclassifiable mismatches for finance ops."
+  }
+]

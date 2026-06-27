@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-a-news-feed-system-pre-1",
+    "stage": "pre",
+    "question": "What does the news feed cache primarily store for each user's feed?",
+    "options": [
+      "Fully rendered HTML of every post",
+      "Post IDs (e.g., <post_id, user_id> mappings), not full post objects",
+      "The complete media files for images and videos",
+      "Only the user's own published posts"
+    ],
+    "correct": 1,
+    "explanation": "The news feed cache stores post IDs with newest first to minimize memory; full user and post objects are hydrated from their own caches/databases at retrieval time."
+  },
+  {
+    "id": "design-a-news-feed-system-pre-2",
+    "stage": "pre",
+    "question": "In the feed publishing flow, what is the fanout service responsible for?",
+    "options": [
+      "Authenticating the user's auth_token",
+      "Delivering a new post to all of the author's friends' news feeds",
+      "Serving images and videos from the CDN",
+      "Sorting the final feed JSON before returning it"
+    ],
+    "correct": 1,
+    "explanation": "The fanout service retrieves friend IDs, filters them, and propagates the post ID into friends' news feed caches so their feeds reflect the new content."
+  },
+  {
+    "id": "design-a-news-feed-system-post-1",
+    "stage": "post",
+    "question": "What is the main weakness of the fanout-on-write (push) model?",
+    "options": [
+      "Feed retrieval is slow because feeds are computed on demand",
+      "It cannot support reverse chronological ordering",
+      "The hotkey problem and wasted work when a user has many friends or inactive followers",
+      "It requires a graph database that push cannot use"
+    ],
+    "correct": 2,
+    "explanation": "Push pre-computes feeds for fast reads, but writing to millions of followers causes a hotkey problem and wastes resources fanning out to inactive users."
+  },
+  {
+    "id": "design-a-news-feed-system-post-2",
+    "stage": "post",
+    "question": "Why does the recommended design use a hybrid of push and pull fanout?",
+    "options": [
+      "To avoid using a CDN for media content",
+      "Push serves typical users with fast reads while pull handles celebrities to avoid massive write fanout",
+      "Because pull is always faster than push for every user",
+      "To eliminate the need for a message queue in publishing"
+    ],
+    "correct": 1,
+    "explanation": "Typical users get the push model for fast pre-computed feeds, while high-follower/celebrity accounts use pull (fanout on read) to avoid the hotkey/write explosion, balanced with consistent hashing."
+  },
+  {
+    "id": "design-a-news-feed-system-post-3",
+    "stage": "post",
+    "question": "During news feed retrieval, how is the final feed assembled after post IDs are fetched from the news feed cache?",
+    "options": [
+      "The post IDs alone are returned directly to the client",
+      "Full user and post objects are fetched from their caches (falling back to DBs on miss), with media served via CDN",
+      "Each post is recomputed by re-running the fanout service",
+      "The client queries APNs/FCM to hydrate the posts"
+    ],
+    "correct": 1,
+    "explanation": "The service uses cached post IDs to fetch complete post and user objects from the content/user caches, hits the databases only on cache miss, and serves images/videos through the CDN."
+  }
+]

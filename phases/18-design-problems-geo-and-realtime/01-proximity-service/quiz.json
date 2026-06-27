@@ -1,0 +1,67 @@
+[
+  {
+    "id": "proximity-service-pre-1",
+    "stage": "pre",
+    "question": "Why does a naive 'SELECT ... WHERE distance(loc, :me) < :r' over a businesses table with separate B-tree indexes on latitude and longitude perform poorly?",
+    "options": [
+      "B-tree indexes cannot store floating-point columns",
+      "Latitude and longitude are independent dimensions, so single-column indexes can't efficiently answer a 2D radius query and the engine falls back to a full table scan",
+      "The Haversine function is not deterministic, so the query planner refuses to use any index",
+      "Relational databases forbid range predicates on more than one column"
+    ],
+    "correct": 1,
+    "explanation": "A radius query spans two independent axes; an index on lat or long alone can't prune the other dimension, forcing a near-full scan. A geospatial index maps 2D space to a single indexable key."
+  },
+  {
+    "id": "proximity-service-pre-2",
+    "stage": "pre",
+    "question": "A proximity service for ~200M mostly-static businesses serving ~5,000 searches/sec is best characterized as which kind of workload?",
+    "options": [
+      "Write-heavy with strong-consistency requirements",
+      "Read-heavy with mostly-static data, favoring a widely replicated and cached index",
+      "Balanced read/write needing two-phase commit on every search",
+      "Fan-out-heavy real-time streaming"
+    ],
+    "correct": 1,
+    "explanation": "Business locations change rarely while searches dominate, so the index can be precomputed, replicated, and aggressively cached with eventual consistency on writes."
+  },
+  {
+    "id": "proximity-service-post-1",
+    "stage": "post",
+    "question": "Two businesses are physically very close but sit on opposite sides of a geohash quadrant boundary, giving them different prefixes. What is the standard fix?",
+    "options": [
+      "Increase the geohash length until both share a prefix",
+      "Switch the entire system to a quadtree",
+      "Also query the 8 neighboring geohash cells around the center cell, then filter candidates by true geodesic distance",
+      "Store each business under a random geohash to spread boundaries out"
+    ],
+    "correct": 2,
+    "explanation": "Geohash cells fragment near boundaries, so querying the center cell plus its 8 neighbors and re-filtering by Haversine distance captures the close-but-different-prefix points."
+  },
+  {
+    "id": "proximity-service-post-2",
+    "stage": "post",
+    "question": "How does a quadtree differ from a fixed-precision geohash grid for indexing skewed business density?",
+    "options": [
+      "A quadtree uses fixed-size cells everywhere, while geohash adapts to density",
+      "A quadtree adaptively subdivides a node into 4 children only when it exceeds a capacity threshold, so dense areas get deeper subdivision than sparse ones",
+      "A quadtree stores data on disk while geohash must stay in memory",
+      "A quadtree cannot answer k-nearest-neighbor queries"
+    ],
+    "correct": 1,
+    "explanation": "The quadtree is density-adaptive: dense regions split deeply and sparse regions stay shallow, whereas a geohash uses a uniform precision regardless of how crowded a cell is."
+  },
+  {
+    "id": "proximity-service-post-3",
+    "stage": "post",
+    "question": "Internally, how do Redis GEO commands (GEOADD, GEOSEARCH) implement a geospatial index?",
+    "options": [
+      "They build an in-memory R-tree per key",
+      "They store a 52-bit geohash as the score of a sorted set and range-scan that score for radius queries",
+      "They keep a separate B-tree per latitude band",
+      "They run Dijkstra over a grid graph on each query"
+    ],
+    "correct": 1,
+    "explanation": "Redis GEO encodes location as a 52-bit geohash used as the sorted-set score, so radius searches become efficient range scans over the sorted set."
+  }
+]

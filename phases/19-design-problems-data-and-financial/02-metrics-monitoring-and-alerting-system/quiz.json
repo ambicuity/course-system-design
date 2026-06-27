@@ -1,0 +1,67 @@
+[
+  {
+    "id": "metrics-monitoring-and-alerting-system-pre-1",
+    "stage": "pre",
+    "question": "What uniquely identifies a single time series in a metrics system?",
+    "options": [
+      "The metric name alone",
+      "The host the metric came from",
+      "The unique combination of metric name plus its label set",
+      "The timestamp of the first data point"
+    ],
+    "correct": 2,
+    "explanation": "A time series is the unique combination of metric name + label set, mapping to a sequence of (timestamp, value) points."
+  },
+  {
+    "id": "metrics-monitoring-and-alerting-system-pre-2",
+    "stage": "pre",
+    "question": "Which characteristic dominates a metrics ingest workload?",
+    "options": [
+      "Reads vastly outnumber writes",
+      "Writes dominate reads by orders of magnitude",
+      "Reads and writes are roughly balanced",
+      "There are no writes, only batch imports"
+    ],
+    "correct": 1,
+    "explanation": "Writes (continuous scrapes/reports) dominate reads by orders of magnitude, so the ingest path is designed for throughput while the query path optimizes for flexibility and latency."
+  },
+  {
+    "id": "metrics-monitoring-and-alerting-system-post-1",
+    "stage": "post",
+    "question": "What is the #1 way to blow up a metrics system, and how is it controlled?",
+    "options": [
+      "Too many dashboards; limit the number of panels",
+      "Cardinality explosion from unbounded labels like userId; forbid unbounded labels and enforce label budgets",
+      "Too long a retention window; delete all data weekly",
+      "Using compression; disable it to save CPU"
+    ],
+    "correct": 1,
+    "explanation": "Putting unbounded ids (e.g., userId) in labels explodes the number of series; labels must be bounded-cardinality dimensions, with budgets and limits enforced."
+  },
+  {
+    "id": "metrics-monitoring-and-alerting-system-post-2",
+    "stage": "post",
+    "question": "In the pull model (Prometheus-style), what useful signal comes for free?",
+    "options": [
+      "Exact end-to-end request tracing",
+      "A scrape failure directly serves as a target-down liveness signal",
+      "Automatic downsampling of old data",
+      "Guaranteed delivery of every short-lived job's metrics"
+    ],
+    "correct": 1,
+    "explanation": "Because the server scrapes targets, a failed scrape is itself a 'target down' signal, giving a built-in liveness check; short-lived jobs are the weak spot, handled with a push gateway."
+  },
+  {
+    "id": "metrics-monitoring-and-alerting-system-post-3",
+    "stage": "post",
+    "question": "Why does an alert rule include a 'for' duration (e.g., condition true for 5m)?",
+    "options": [
+      "To make alerts fire faster on the first breach",
+      "To prevent flapping on transient spikes before moving to the firing state",
+      "To reduce storage cost of the TSDB",
+      "To downsample the underlying time series"
+    ],
+    "correct": 1,
+    "explanation": "A rule goes inactive to pending to firing; the 'for' duration requires the condition to hold for a period, preventing flapping on transient spikes."
+  }
+]

@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-a-notification-system-pre-1",
+    "stage": "pre",
+    "question": "When sending iOS and Android push notifications, what does the system actually transmit to APNs or FCM to address a specific device?",
+    "options": [
+      "The user's email address",
+      "A device/registration token obtained when the app registered with the provider",
+      "The user's raw account password",
+      "The internal database primary key for the user"
+    ],
+    "correct": 1,
+    "explanation": "The app registers with APNs/FCM and obtains a device or registration token, which the system stores keyed by user and sends along with the payload so the provider can reach the right device."
+  },
+  {
+    "id": "design-a-notification-system-pre-2",
+    "stage": "pre",
+    "question": "Why are message queues placed between the notification servers and the channel workers?",
+    "options": [
+      "To permanently store the full text of every notification instead of a database",
+      "To absorb traffic bursts and let each stage scale independently while isolating slow providers",
+      "To encrypt notifications end-to-end before delivery",
+      "To eliminate the need for third-party providers entirely"
+    ],
+    "correct": 1,
+    "explanation": "Queues decouple producers from workers so campaign bursts are absorbed; with one queue per channel, a slow or failing provider in one channel does not block the others."
+  },
+  {
+    "id": "design-a-notification-system-post-1",
+    "stage": "post",
+    "question": "Given an at-least-once pipeline, how does the system prevent the same logical notification from being sent twice?",
+    "options": [
+      "It guarantees exactly-once delivery across all third-party providers",
+      "It checks an idempotency key against a dedup store (e.g., Redis with TTL) and drops duplicates",
+      "It retries every message forever until the provider confirms",
+      "It sends all notifications synchronously without queues"
+    ],
+    "correct": 1,
+    "explanation": "Exactly-once across third parties is effectively impossible, so the design uses at-least-once plus an idempotency key checked against a dedup store to drop duplicates from retries and repeated upstream events."
+  },
+  {
+    "id": "design-a-notification-system-post-2",
+    "stage": "post",
+    "question": "A worker gets an 'invalid/expired token' response from APNs. What is the correct handling?",
+    "options": [
+      "Retry the same token with exponential backoff until it succeeds",
+      "Treat it as a permanent failure, stop retrying, and prune the dead token",
+      "Move it to the dead-letter queue and retry it hourly",
+      "Switch the message to the SMS channel automatically"
+    ],
+    "correct": 1,
+    "explanation": "An invalid/expired token is a permanent failure that should not be retried; the system prunes the dead token so future sends skip it and delivery rates stay high."
+  },
+  {
+    "id": "design-a-notification-system-post-3",
+    "stage": "post",
+    "question": "Why does the design separate high-priority transactional/security messages from low-priority marketing messages, often via priority queues?",
+    "options": [
+      "Marketing messages legally cannot share infrastructure with security alerts",
+      "So a large marketing blast never delays time-sensitive messages like a 2FA code",
+      "Because transactional messages do not need templates",
+      "Because only marketing messages require user opt-in"
+    ],
+    "correct": 1,
+    "explanation": "Separating priorities ensures a bulk marketing campaign cannot starve or delay critical transactional/security notifications such as one-time passcodes."
+  }
+]

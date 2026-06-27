@@ -1,0 +1,67 @@
+[
+  {
+    "id": "ad-click-event-aggregation-pre-1",
+    "stage": "pre",
+    "question": "Why does the design store both raw click events and aggregated data?",
+    "options": [
+      "Raw data is queried directly to serve all user requests",
+      "Raw data is the source of truth for recomputation and reconciliation, while aggregated data serves fast queries",
+      "Aggregated data is only a backup and never queried",
+      "Storing both is required by the RTB protocol"
+    ],
+    "correct": 1,
+    "explanation": "Raw data is kept as the source of truth for recomputation, debugging, and reconciliation; queries are served from the smaller, fast aggregated data."
+  },
+  {
+    "id": "ad-click-event-aggregation-pre-2",
+    "stage": "pre",
+    "question": "For correct ad-click aggregation, which notion of time should windows be based on?",
+    "options": [
+      "Processing time, since it is simpler",
+      "Event time (when the click happened), handling lateness with a watermark",
+      "The time the database writer runs",
+      "Wall-clock time on the query server"
+    ],
+    "correct": 1,
+    "explanation": "Aggregating by event time is more accurate but must wait for late/out-of-order events, which is handled by a watermark that defines how long to wait before finalizing a window."
+  },
+  {
+    "id": "ad-click-event-aggregation-post-1",
+    "stage": "post",
+    "question": "Why is the Kappa architecture recommended over the Lambda architecture here?",
+    "options": [
+      "Kappa uses two separate codebases for accuracy",
+      "Kappa unifies real-time aggregation and historical recalculation in a single stream-processing path by replaying the log",
+      "Kappa avoids storing any raw data",
+      "Lambda cannot handle exactly-once semantics at all"
+    ],
+    "correct": 1,
+    "explanation": "Lambda maintains two codebases (batch + streaming); Kappa handles both real-time and reprocessing through one stream path that replays raw events, avoiding the duplicate-codebase downside."
+  },
+  {
+    "id": "ad-click-event-aggregation-post-2",
+    "stage": "post",
+    "question": "How is exactly-once achieved so billing counts aren't doubled on crash-and-restart?",
+    "options": [
+      "By relying on Kafka's default at-least-once delivery alone",
+      "By committing the aggregation result and the consumer offset atomically (or idempotent writes keyed by ad_id, minute, partition)",
+      "By disabling producer retries entirely",
+      "By aggregating on processing time instead of event time"
+    ],
+    "correct": 1,
+    "explanation": "The result and the offset must be committed atomically (distributed transaction or idempotent keyed writes) so a restart neither double-counts nor loses data."
+  },
+  {
+    "id": "ad-click-event-aggregation-post-3",
+    "stage": "post",
+    "question": "How is a hot ad_id (viral ad creating a hot partition) mitigated?",
+    "options": [
+      "Drop events for the popular ad to reduce load",
+      "Split the hot key across nodes with a random suffix (ad_id_1, ad_id_2, ...) and merge in the reduce step",
+      "Switch the whole system to a single relational database",
+      "Stop partitioning by ad_id and process all events on one node"
+    ],
+    "correct": 1,
+    "explanation": "A hot key is split across multiple aggregation nodes by appending a random suffix and merged during the reduce step, with extra resources allocated to popular ads."
+  }
+]

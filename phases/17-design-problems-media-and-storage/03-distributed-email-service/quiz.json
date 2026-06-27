@@ -1,0 +1,67 @@
+[
+  {
+    "id": "distributed-email-service-pre-1",
+    "stage": "pre",
+    "question": "Which protocol is used to send mail between mail servers, and which is preferred for multi-device retrieval?",
+    "options": [
+      "IMAP to send; POP to retrieve across devices",
+      "SMTP to send; IMAP to retrieve and sync across devices",
+      "HTTPS to send; SMTP to retrieve across devices",
+      "POP to send; SMTP to retrieve across devices"
+    ],
+    "correct": 1,
+    "explanation": "SMTP is the standard for sending mail server-to-server, while IMAP keeps messages on the server and syncs them across multiple devices, unlike POP."
+  },
+  {
+    "id": "distributed-email-service-pre-2",
+    "stage": "pre",
+    "question": "When an outgoing server needs to deliver mail to an external domain, what does it look up to find the destination mail server?",
+    "options": [
+      "The domain's A record",
+      "The domain's CNAME record",
+      "The domain's MX (Mail Exchanger) record",
+      "The domain's TXT record"
+    ],
+    "correct": 2,
+    "explanation": "Sending servers query DNS for the recipient domain's MX record to locate the destination mail server."
+  },
+  {
+    "id": "distributed-email-service-post-1",
+    "stage": "post",
+    "question": "Why is email metadata typically stored in a distributed wide-column/NoSQL store partitioned by user_id?",
+    "options": [
+      "Because metadata is large in size and rarely read",
+      "Because a single relational DB cannot hold petabytes of billions of small rows at 1B-user scale, and partitioning co-locates a user's mail",
+      "Because NoSQL stores guarantee strong global consistency for free",
+      "Because attachments must be inlined into the same rows"
+    ],
+    "correct": 1,
+    "explanation": "Metadata is heavy in count but small in size; a distributed column store scales horizontally and partitioning by user_id co-locates a user's mail for efficient folder/label listing and isolation."
+  },
+  {
+    "id": "distributed-email-service-post-2",
+    "stage": "post",
+    "question": "Which standards are used to verify sender legitimacy and reduce spoofing in the anti-spam pipeline?",
+    "options": [
+      "SPF, DKIM, and DMARC",
+      "TLS, SSL, and HSTS",
+      "OAuth, SAML, and OIDC",
+      "MX, A, and CNAME records"
+    ],
+    "correct": 0,
+    "explanation": "SPF, DKIM, and DMARC authenticate the sending domain/IP and reduce spoofing, complementing IP/domain reputation and spam/virus scoring."
+  },
+  {
+    "id": "distributed-email-service-post-3",
+    "stage": "post",
+    "question": "How are large email attachments handled relative to the metadata store?",
+    "options": [
+      "Stored inline as base64 inside each metadata row",
+      "Stored in distributed object storage with the metadata holding a reference, and deduplicated by content hash",
+      "Stored only in the distributed cache for fast access",
+      "Streamed directly to the client without persistence"
+    ],
+    "correct": 1,
+    "explanation": "Attachments are large and immutable, so they live in S3-like object storage referenced by a pointer in metadata, and identical attachments are deduplicated by content hash."
+  }
+]

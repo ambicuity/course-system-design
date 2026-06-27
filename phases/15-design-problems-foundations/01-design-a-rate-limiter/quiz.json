@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-a-rate-limiter-pre-1",
+    "stage": "pre",
+    "question": "Where should an API rate limiter primarily be enforced, and why?",
+    "options": [
+      "On the client, because it saves a network round trip",
+      "On the server side, because client requests can be forged by malicious actors",
+      "In the user's browser cache, to reduce server load",
+      "Only in DNS, before any request reaches the application"
+    ],
+    "correct": 1,
+    "explanation": "Clients cannot be trusted since requests can be forged, so server-side enforcement (often as middleware or an API gateway) is preferred."
+  },
+  {
+    "id": "design-a-rate-limiter-pre-2",
+    "stage": "pre",
+    "question": "When a request exceeds the configured limit, which HTTP status code does a rate limiter typically return?",
+    "options": [
+      "404 Not Found",
+      "503 Service Unavailable",
+      "429 Too Many Requests",
+      "403 Forbidden"
+    ],
+    "correct": 2,
+    "explanation": "HTTP 429 (Too Many Requests) is the standard status code indicating the client has sent too many requests in a given window."
+  },
+  {
+    "id": "design-a-rate-limiter-post-1",
+    "stage": "post",
+    "question": "Which algorithm is best suited for allowing controlled bursts of traffic while staying memory efficient?",
+    "options": [
+      "Token bucket",
+      "Fixed window counter",
+      "Sliding window log",
+      "Leaking bucket"
+    ],
+    "correct": 0,
+    "explanation": "The token bucket allows bursts when tokens are available and uses little memory, which is why Amazon and Stripe adopt it."
+  },
+  {
+    "id": "design-a-rate-limiter-post-2",
+    "stage": "post",
+    "question": "What is the main weakness of the fixed window counter algorithm?",
+    "options": [
+      "It stores a timestamp for every request, consuming large amounts of memory",
+      "Bursts at window boundaries can allow up to twice the intended limit through",
+      "It always processes requests at a fixed outflow rate, blocking bursts entirely",
+      "It requires a coordination service to assign worker IDs"
+    ],
+    "correct": 1,
+    "explanation": "At a window boundary, requests from the end of one window plus the start of the next can let through roughly double the configured quota."
+  },
+  {
+    "id": "design-a-rate-limiter-post-3",
+    "stage": "post",
+    "question": "In a distributed setup with multiple rate-limiter servers sharing one Redis counter, how is the read-modify-write race condition best avoided?",
+    "options": [
+      "Use sticky sessions so each client always hits the same server",
+      "Disable EXPIRE so counters never reset mid-window",
+      "Use atomic operations such as Lua scripts or Redis sorted sets",
+      "Increase the number of buckets per user"
+    ],
+    "correct": 2,
+    "explanation": "Non-atomic increment-then-write causes lost updates under concurrency; Lua scripts or sorted sets make the increment-and-check atomic. Sticky sessions are an anti-pattern here."
+  }
+]

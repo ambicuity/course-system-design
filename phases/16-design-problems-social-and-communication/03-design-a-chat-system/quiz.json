@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-a-chat-system-pre-1",
+    "stage": "pre",
+    "question": "Why is WebSocket chosen over polling and long polling for the chat client-server connection?",
+    "options": [
+      "It avoids using ports 80/443 so it bypasses all firewalls",
+      "It provides a bidirectional, persistent connection letting the server push messages asynchronously",
+      "It removes the need for any stateful chat servers",
+      "It guarantees messages are delivered exactly once"
+    ],
+    "correct": 1,
+    "explanation": "WebSocket upgrades from HTTP into a persistent bidirectional connection (over port 80/443), so the server can push new messages to clients efficiently for both sending and receiving."
+  },
+  {
+    "id": "design-a-chat-system-pre-2",
+    "stage": "pre",
+    "question": "Why does the design persist chat history in key-value stores rather than a relational database?",
+    "options": [
+      "KV stores enforce stronger ACID consistency than relational databases",
+      "They scale horizontally with low latency and handle the huge long-tail volume well",
+      "Relational databases cannot store text messages",
+      "KV stores guarantee global message ordering automatically"
+    ],
+    "correct": 1,
+    "explanation": "Chat data is enormous with a long tail of rarely-accessed old messages; KV stores scale horizontally with low latency (Messenger uses HBase, Discord uses Cassandra), trading consistency guarantees for scale."
+  },
+  {
+    "id": "design-a-chat-system-post-1",
+    "stage": "post",
+    "question": "Why can't created_at timestamps be relied upon to sequence messages, and what is used instead?",
+    "options": [
+      "Timestamps are not stored, so a random UUID is used instead",
+      "Multiple messages can share an identical timestamp, so a sortable message_id (e.g., Snowflake or local sequence) is used",
+      "Timestamps are in the wrong time zone, so epoch seconds are used",
+      "created_at is only available for group chat, so auto-increment is used everywhere"
+    ],
+    "correct": 1,
+    "explanation": "Because multiple messages may share the same created_at, ordering relies on a globally unique and time-sortable message_id, generated via Snowflake or a per-channel local sequence number."
+  },
+  {
+    "id": "design-a-chat-system-post-2",
+    "stage": "post",
+    "question": "In the one-on-one message flow, what happens after the message is stored when the recipient (User B) is offline?",
+    "options": [
+      "The message is discarded and the sender must resend it",
+      "A push notification is sent via the PN servers, and the message waits in the KV store until B reconnects",
+      "User B's WebSocket is forcibly reopened by the chat server",
+      "The message is broadcast to all of User B's friends"
+    ],
+    "correct": 1,
+    "explanation": "If the recipient is offline, the system sends a push notification through the PN servers; the stored message stays in the KV store and syncs to B's device when it reconnects."
+  },
+  {
+    "id": "design-a-chat-system-post-3",
+    "stage": "post",
+    "question": "Why does the presence system use a heartbeat mechanism instead of toggling status directly on WebSocket disconnect?",
+    "options": [
+      "Heartbeats reduce the memory needed per connection to near zero",
+      "Brief network drops would otherwise cause the online indicator to flap, harming UX",
+      "WebSocket cannot detect disconnections at all",
+      "Heartbeats are required to generate message IDs"
+    ],
+    "correct": 1,
+    "explanation": "Frequent brief disconnects would constantly flip presence; with a heartbeat (e.g., every 5s, offline after ~30s with no beat), the system tolerates short interruptions and avoids status flapping at the cost of delayed offline detection."
+  }
+]

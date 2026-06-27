@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-youtube-pre-1",
+    "stage": "pre",
+    "question": "Why do video platforms like YouTube transcode an uploaded video into multiple resolutions and formats?",
+    "options": [
+      "To permanently delete the original high-quality source after upload",
+      "To support different devices, codecs, and bandwidth conditions with adaptive quality",
+      "To reduce the number of metadata database writes per upload",
+      "To bypass the need for a CDN when serving popular videos"
+    ],
+    "correct": 1,
+    "explanation": "Transcoding produces multiple encoded versions so different devices/players can play the video and clients can adapt quality to available bandwidth."
+  },
+  {
+    "id": "design-youtube-pre-2",
+    "stage": "pre",
+    "question": "Why is a CDN central to the video streaming flow rather than serving all videos directly from origin blob storage?",
+    "options": [
+      "CDNs transcode videos into HLS and DASH on the fly",
+      "CDNs permanently store the only copy of each video to save origin space",
+      "Edge servers near users reduce latency and offload bandwidth from the origin",
+      "CDNs enforce DRM so origin storage does not need encryption"
+    ],
+    "correct": 2,
+    "explanation": "A CDN caches transcoded video on geographically distributed edge servers, delivering content with low latency while offloading origin bandwidth."
+  },
+  {
+    "id": "design-youtube-post-1",
+    "stage": "post",
+    "question": "In the transcoding architecture, what is the role of the DAG (Directed Acyclic Graph) model?",
+    "options": [
+      "It guarantees strong consistency for the metadata database",
+      "It defines flexible processing pipelines with sequential and parallel task stages",
+      "It replaces the CDN for distributing encoded output",
+      "It shards the metadata database across regions"
+    ],
+    "correct": 1,
+    "explanation": "The DAG model expresses video processing as tasks (split, encode, thumbnail, watermark, merge) that run in sequential and parallel stages, enabling customizable, high-parallelism pipelines."
+  },
+  {
+    "id": "design-youtube-post-2",
+    "stage": "post",
+    "question": "Given YouTube's long-tail access distribution, which cost-saving strategy is most appropriate?",
+    "options": [
+      "Serve every video, popular or not, from the CDN globally",
+      "Pre-encode all videos into every resolution regardless of demand",
+      "Serve popular videos from the CDN and less popular videos from high-capacity storage, encoding rarely-watched content on demand",
+      "Disable transcoding entirely to avoid storage costs"
+    ],
+    "correct": 2,
+    "explanation": "Because few videos drive most traffic, popular content is served from the CDN while cold content is served from storage servers and encoded on demand to cut bandwidth and storage costs."
+  },
+  {
+    "id": "design-youtube-post-3",
+    "stage": "post",
+    "question": "How do message queues improve the upload/transcoding pipeline?",
+    "options": [
+      "They enforce a strict linear download-segment-encode-upload order",
+      "They decouple stages so modules process independently, enabling parallelism and loose coupling",
+      "They eliminate the need for transcoded blob storage",
+      "They replace pre-signed URLs for upload authorization"
+    ],
+    "correct": 1,
+    "explanation": "Message queues decouple pipeline stages so each module consumes items independently, allowing stages to run in parallel and improving system responsiveness."
+  }
+]

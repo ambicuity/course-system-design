@@ -1,0 +1,67 @@
+[
+  {
+    "id": "nearby-friends-pre-1",
+    "stage": "pre",
+    "question": "Why is server-push over persistent WebSocket connections preferred to HTTP polling for delivering friends' live locations?",
+    "options": [
+      "Polling cannot transmit latitude/longitude payloads",
+      "WebSockets encrypt data while HTTP polling cannot",
+      "At scale, polling wastes requests when nothing changed and adds latency, whereas the server can push updates the instant they arrive over a held connection",
+      "HTTP polling violates the same-origin policy for location data"
+    ],
+    "correct": 2,
+    "explanation": "Polling forces constant requests even with no new data and delays updates; persistent WebSocket connections let the server push movement to friends in near real time."
+  },
+  {
+    "id": "nearby-friends-pre-2",
+    "stage": "pre",
+    "question": "With ~10M concurrent users each sending a location update every 30 seconds, roughly what is the inbound update rate before fan-out?",
+    "options": [
+      "About 3,000 updates/sec",
+      "About 334,000 updates/sec",
+      "About 10 million updates/sec",
+      "About 30 updates/sec"
+    ],
+    "correct": 1,
+    "explanation": "10M / 30s is roughly 334,000 updates/sec inbound; fan-out to friends multiplies the downstream message rate into the millions/sec."
+  },
+  {
+    "id": "nearby-friends-post-1",
+    "stage": "post",
+    "question": "What is the main benefit of storing each user's last location in a Redis cache with a TTL slightly longer than the update interval?",
+    "options": [
+      "It guarantees exactly-once delivery of every update",
+      "It lets the system shard channels by geohash automatically",
+      "A user who stops sending updates naturally expires from the cache, giving automatic offline detection with no separate cleanup bookkeeping",
+      "It compresses coordinates to reduce bandwidth"
+    ],
+    "correct": 2,
+    "explanation": "The TTL makes the cache self-cleaning: if updates stop, the entry expires and the user is treated as offline without explicit 'user went offline' tracking."
+  },
+  {
+    "id": "nearby-friends-post-2",
+    "stage": "post",
+    "question": "In the Redis Pub/Sub fan-out model, where and when is the radius distance check performed?",
+    "options": [
+      "On the publishing client before sending its own location",
+      "Inside Redis, which drops out-of-range messages before delivery",
+      "On the WebSocket server holding a friend's connection, comparing the sender's new location against the recipient's cached last-known location when it receives the published update",
+      "In a nightly batch job that precomputes all friend distances"
+    ],
+    "correct": 2,
+    "explanation": "When a subscribed server receives a friend's published update, it computes Haversine distance against the recipient's cached location and only pushes if within the radius."
+  },
+  {
+    "id": "nearby-friends-post-3",
+    "stage": "post",
+    "question": "Why is at-most-once delivery acceptable for location updates, simplifying the design versus a notification system?",
+    "options": [
+      "Because WebSockets physically cannot drop messages",
+      "Because a dropped update is corrected by the next periodic update a few seconds later, so durable queues and retries aren't needed",
+      "Because location updates are idempotent and replayed from a log",
+      "Because clients store a full history and reconcile every minute"
+    ],
+    "correct": 1,
+    "explanation": "The feature is soft real-time; a lost update self-corrects on the next periodic send, so the system avoids the cost of guaranteed delivery."
+  }
+]

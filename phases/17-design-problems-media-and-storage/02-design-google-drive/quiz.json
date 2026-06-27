@@ -1,0 +1,67 @@
+[
+  {
+    "id": "design-google-drive-pre-1",
+    "stage": "pre",
+    "question": "When a user edits a single line in a large file, why is delta sync preferable to re-uploading the whole file?",
+    "options": [
+      "It guarantees strong consistency across all devices",
+      "It transfers only the modified blocks, saving bandwidth and time",
+      "It removes the need to store file metadata",
+      "It avoids the need to hash file contents"
+    ],
+    "correct": 1,
+    "explanation": "Delta sync splits files into blocks and transfers only the changed blocks rather than the entire file, dramatically reducing bandwidth usage."
+  },
+  {
+    "id": "design-google-drive-pre-2",
+    "stage": "pre",
+    "question": "Why are uploads sent directly to blob storage using pre-signed URLs instead of routed through the API server?",
+    "options": [
+      "Pre-signed URLs encrypt the file contents at rest automatically",
+      "It lets the API server transcode files before storage",
+      "It offloads file-byte bandwidth from API servers while granting temporary, scoped upload access",
+      "It removes the need for a metadata database"
+    ],
+    "correct": 2,
+    "explanation": "Pre-signed URLs grant the client temporary, limited access to upload directly to blob storage, keeping the stateless API servers off the heavy data path."
+  },
+  {
+    "id": "design-google-drive-post-1",
+    "stage": "post",
+    "question": "How does block-level deduplication reduce storage costs across the system?",
+    "options": [
+      "It stores identical chunks (by hash) only once even across users and files",
+      "It deletes all old file versions immediately after each edit",
+      "It compresses the metadata database into blob storage",
+      "It replaces erasure coding with single-copy storage"
+    ],
+    "correct": 0,
+    "explanation": "Blocks are hashed, so identical chunks appearing across users or files are stored a single time, cutting redundant storage."
+  },
+  {
+    "id": "design-google-drive-post-2",
+    "stage": "post",
+    "question": "Why does file metadata require strong consistency while block contents can be eventually consistent?",
+    "options": [
+      "Metadata is larger than block contents and needs faster disks",
+      "Blocks change more often than metadata so consistency is pointless",
+      "A rename or permission change must appear immediately everywhere, while block propagation can lag slightly",
+      "Eventual consistency is impossible for binary data"
+    ],
+    "correct": 2,
+    "explanation": "Operations like rename and permission changes must be reflected instantly across devices (ACID), whereas chunk propagation and search indexes can tolerate eventual consistency."
+  },
+  {
+    "id": "design-google-drive-post-3",
+    "stage": "post",
+    "question": "How are interrupted large-file uploads handled to make them resumable?",
+    "options": [
+      "The client restarts the entire transfer from the beginning",
+      "The file is downgraded to a lower resolution before retry",
+      "The server merges the partial upload with the last good version automatically",
+      "The client retries only the missing chunks rather than the whole file"
+    ],
+    "correct": 3,
+    "explanation": "Files are uploaded in chunks, so on interruption the client re-sends only the missing chunks, enabling resumable, parallelizable uploads."
+  }
+]
